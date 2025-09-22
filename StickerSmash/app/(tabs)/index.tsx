@@ -1,8 +1,9 @@
 import { View, StyleSheet } from "react-native";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ImageSourcePropType } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import * as MediaLibrary from 'expo-media-library';
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 import * as ImagePicker from 'expo-image-picker';
@@ -19,6 +20,7 @@ const Index = () => {
  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
+ const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
     const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -34,6 +36,12 @@ const Index = () => {
       alert('You did not select any image.');
     }
   };
+
+  useEffect(() => {
+    if (!permissionResponse?.granted) {
+      requestPermission();
+    }
+  }, []);
 
   const onReset = () => {
     setShowAppOptions(false);
